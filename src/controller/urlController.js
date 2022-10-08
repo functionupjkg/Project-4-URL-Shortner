@@ -12,8 +12,6 @@ const urlRegex = function (match) {
 }
 
 
-
-
 //======================================== Redis & Casing ==========================================
 
 
@@ -44,7 +42,8 @@ const GET_ASYNC = promisify(redisClient.GET).bind(redisClient);
 
 
 
-//============================================ Create Url Shorten API =======================================
+
+//============================================ Create Function for Long Url to Shorten API =======================================
 
 const createUrl = async function (req, res) {
     try {
@@ -60,7 +59,7 @@ const createUrl = async function (req, res) {
             return res.status(400).send({ status: false, msg: 'longUrl is invalid' })
         }
         if (!url.isURL(data.longUrl)) {
-            return res.status(400).send({ status: false, msg: "longUrl is invalid" })
+            return res.status(400).send({ status: false, msg: "longUrl is invalid.. Please Enter Correct" })
         }
 
         let options = {
@@ -71,7 +70,7 @@ const createUrl = async function (req, res) {
             .then(() => data.longUrl)
             .catch(() => null)
             
-        if (!verifyUrl) {
+        if (verifyUrl == null) {
             return res.status(400).send({ status: false, msg: `This Link ${data.longUrl}, is not valid url.` })
         }
         // If data present in Cache Memory
@@ -103,7 +102,7 @@ const createUrl = async function (req, res) {
             urlCode: createData.urlCode
             
         }
-        // await SET_ASYNC(`${data.longUrl}`, JSON.stringify(result))
+        await SET_ASYNC(`${data.longUrl}`, JSON.stringify(result) , "EX", 1000)
         return res.status(201).send({ status: true, data: result })
     }
     catch (err) {
@@ -145,9 +144,6 @@ const getUrl = async function (req, res) {
 }
 
 
-
-
-
-//================== Exported Modules ========================
+//========================== Exported Modules ========================
 
 module.exports = { createUrl, getUrl };

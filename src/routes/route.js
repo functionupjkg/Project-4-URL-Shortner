@@ -16,6 +16,7 @@ router.get('/:urlCode', urlController.getUrl)
 
 
 
+
 //---------API for Wrong route-------------
 router.all('/*', function(req, res){
     res.status(400).send({status:false, msg: "Path Not Found"})
